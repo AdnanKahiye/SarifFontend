@@ -6,7 +6,7 @@ import PackageFormModal, {
   PackageFormData,
   PackageType,
 } from "./PackagesFormModal";
-import ConfirmDeleteModal from "../Users/ConfirmDeleteModal";
+import ConfirmDeleteModal from "../common/ConfirmDeleteModal";
 import { packageService } from "@/lib/packages";
 import toast from "react-hot-toast";
 

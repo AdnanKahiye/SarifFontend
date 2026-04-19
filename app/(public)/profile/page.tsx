@@ -69,10 +69,10 @@ export default function ProfilePage() {
 
       setLoading(true);
 
-      const res = await UsersService.update({
-        id: user.id,
-        ...form
-      });
+      const res = await UsersService.update(
+  user.id,
+  form
+);
 
       setUser(res.data);
       setForm(res.data);

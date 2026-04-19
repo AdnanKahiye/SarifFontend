@@ -112,7 +112,7 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       const { confirmPassword, ...apiData } = formData;
-      const response = await UsersService.createUser(apiData);
+      const response = await UsersService.create(apiData);
       
       if (response.data.success) {
         toast.success("Account created! Redirecting to login...");

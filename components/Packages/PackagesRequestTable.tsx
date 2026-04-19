@@ -5,7 +5,7 @@ import Input from "@/components/form/input/InputField";
 import PackageRequestFormModal, {
   PackageReuestFormData
 } from "./PackagesRequestFormModal";
-import ConfirmDeleteModal from "../Users/ConfirmDeleteModal";
+import ConfirmDeleteModal from "../common/ConfirmDeleteModal";
 import { packageService } from "@/lib/packages";
 import toast from "react-hot-toast";
 
