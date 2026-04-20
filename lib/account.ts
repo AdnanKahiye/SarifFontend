@@ -21,4 +21,17 @@ CreateCurrency(data: any) {
     return api.delete(`/Account/currency/${id}`);
   },
  
+
+
+
+  getTransactionHistory(page: number = 1, pageSize: number = 10, search: string = "") {
+
+  return api.get(`/Account/transaction?page=${page}&pageSize=${pageSize}&search=${search}`);
+},
+
+
+  deleteTransaction(id: string) {
+    return api.delete(`/Account/transaction/${id}`);
+  },
+ 
 };
