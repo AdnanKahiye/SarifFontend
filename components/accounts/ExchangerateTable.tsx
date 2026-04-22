@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import CurrencyModel, { CurrencyFormData } from "./CurrencyFormModal";
+import ExchangeModel, { ExchangeRateFormData } from "./Exchange-rateFormModal";
 import ConfirmDeleteModal from "../ui/Model/ConfirmDeleteModal";
-import { SetupService } from "@/lib/setup";
 import toast from "react-hot-toast";
 import { usePermission } from "@/context/PermissionContext";
 import { Search, Loader2 } from "lucide-react"; // Waxaan ku daray Loader2 si loo muujiyo loading-ka
@@ -12,27 +11,33 @@ import { i } from "framer-motion/client";
 
 
 
-interface CurrencyDto {
-  id: string;
-  code: string;
-  name: string;
-  symbol: string;
-  decimalPlaces: number;
-  isBase: boolean;
-  accountsCount: number;
-  userId: boolean;
-  userName: boolean;
+interface ExchangeRateDto {
+  id: number;
+  rate: number;
+
+  currencyId: number;
+  currencyCode: string;
+  currencyName: string;
+
+  branchId: number | null;
+  branchName: string;
+
+  agencyId: string;
+  agencyName: string;
+
+  userId: string;
+  userName: string;
 }
 
 export default function CurrencyTable() {
   const { hasPermission } = usePermission();
-  const [users, setCurrencies] = useState<CurrencyDto[]>([]);
+  const [users, setCurrencies] = useState<ExchangeRateDto[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true); // Bilowga Loading ka dhig true
 
   const [openModal, setOpenModal] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<ExchangeRateDto | null>(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -43,7 +48,7 @@ export default function CurrencyTable() {
   const loadCurrencies = useCallback(async (page: number, searchQuery: string) => {
     setLoading(true); // Bilow loading markii xog cusub la dalbado
     try {
-      const res = await AccountService.getCurrencies(page, itemsPerPage);
+      const res = await AccountService.getExchangeRates(page, itemsPerPage);
       const apiResponse = res.data?.data;
       if (apiResponse) {
         setCurrencies(apiResponse.data || []);
@@ -69,15 +74,15 @@ export default function CurrencyTable() {
     setCurrentPage(1);
   };
 
-  const handleFormSubmit = async (data: CurrencyFormData) => {
+  const handleFormSubmit = async (data: ExchangeRateFormData) => {
     try {
       if (mode === "add") {
-        await AccountService.CreateCurrency(data);
-        toast.success("Currency created successfully");
+        await AccountService.CreateExchangeRate(data);
+        toast.success("Exchange rate created successfully");
       } else {
         if (!selectedCurrency) return;
-        await AccountService.updateCurrency(selectedCurrency.id, data);
-        toast.success("Profile updated");
+        await AccountService.updateExchangeRate(selectedCurrency.currencyName, data);
+        toast.success("Exchange rate updated");
       }
       setOpenModal(false);
       loadCurrencies(currentPage, search);
@@ -90,12 +95,12 @@ export default function CurrencyTable() {
     if (!selectedCurrency) return;
     setDeleting(true);
     try {
-      await AccountService.deleteCurrency(selectedCurrency.id);
-      toast.success("Currency removed");
+      await AccountService.deleteExchangeRate(selectedCurrency.currencyName);
+      toast.success("Exchange rate removed");
       setOpenDelete(false);
       loadCurrencies(currentPage, search);
     } catch {
-      toast.error("Could not delete currency");
+      toast.error("Could not delete exchange rate");
     } finally {
       setDeleting(false);
     }
@@ -113,9 +118,9 @@ export default function CurrencyTable() {
     <div className="bg-[#f3f3f9] dark:bg-gray-900 min-h-screen p-4 sm:p-6 font-sans">
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[15px] font-bold text-[#495057] dark:text-gray-200 uppercase tracking-wide">List Currency</h2>
+          <h2 className="text-[15px] font-bold text-[#495057] dark:text-gray-200 uppercase tracking-wide">List Exchange Rates</h2>
           <div className="text-[13px] text-[#495057] font-medium">
-            Tables <span className="text-gray-400 mx-1">&gt;</span> <span className="text-gray-400">List Currency</span>
+            Tables <span className="text-gray-400 mx-1">&gt;</span> <span className="text-gray-400">List Exchange Rates</span>
           </div>
         </div>
 
@@ -160,15 +165,11 @@ export default function CurrencyTable() {
               <thead className="bg-[#f3f6f9] dark:bg-gray-700/50 text-[#878a99] text-[13px] font-bold uppercase border-y border-gray-200 dark:border-gray-700">
                 <tr>
                   <th className="p-3 w-10 text-center"><input type="checkbox" className="rounded border-gray-300" /></th>
-                  {/* <th className="p-3">ID</th> */}
-                  <th className="p-3">Code</th>
-                  <th className="p-3">Name</th>
-                  <th className="p-3 text-center">Symbol</th>
-                  <th className="p-3 text-center">DecimalPlaces</th>
-                  <th className="p-3 text-center">IsBase</th>
-                  <th className="p-3 text-center">Accounts Count</th>
-                  <th className="p-3 text-center">User Name</th>
-
+                  <th className="p-3">#</th>
+                  <th className="p-3">Exchange Rate</th>
+                  <th className="p-3">Currency</th>
+                  <th className="p-3">Agency</th>
+                  {/* <th className="p-3">User</th> */}
                   <th className="p-3 text-center">Action</th>
                 </tr>
               </thead>
@@ -183,19 +184,12 @@ export default function CurrencyTable() {
                   users.map((u) => (
                     <tr key={u.id} className="text-[13px] text-[#212529] dark:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                       <td className="p-3 text-center"><input type="checkbox" className="rounded border-gray-300" /></td>
-                      {/* <td className="p-3 font-medium">{u.id}</td> */}
-                      <td className="p-3 text-[#878a99]">{u.code}</td>
-                      <td className="p-3">{u.name || "N/A"}</td>
-                      <td className="p-3 font-medium">{u.symbol}</td>
-                      <td className="p-3 text-[#878a99]">{u.decimalPlaces}</td>
-                      <td className="p-3">
-                        {u.isBase ? "Yes" : "No"}
-                      </td>
-                      <td className="p-3 font-medium">{u.accountsCount || "N/A"}</td>
-
-
-
-                      <td className="p-3 font-medium">{u.userName}</td>
+                      <td className="p-3 font-medium">{u.id}</td>
+                      {/* <td className="p-3">{+ 1}</td> */}
+                      <td className="p-3 text-[#878a99]">{u.rate}</td>
+                      <td className="p-3">{u.currencyName || "N/A"}</td>
+                      <td className="p-3 font-medium">{u.agencyName}</td>
+                      {/* <td className="p-3 font-medium">{u.userName}</td> */}
 
                       <td className="p-3">
                         <div className="flex items-center justify-center gap-2">
@@ -247,17 +241,12 @@ export default function CurrencyTable() {
         </div>
       </div>
 
-      <CurrencyModel
+      <ExchangeModel
         open={openModal}
         mode={mode}
         initialData={selectedCurrency ? {
-          name: selectedCurrency.name,
-          code: selectedCurrency.code,
-          symbol: selectedCurrency.symbol,
-          decimalPlaces: selectedCurrency.decimalPlaces,
-          isBase: selectedCurrency.isBase,
-
-
+          rate: selectedCurrency.rate,
+          currencyId: selectedCurrency.currencyId,
         } : undefined}
         onClose={() => setOpenModal(false)}
         onSubmit={handleFormSubmit}
