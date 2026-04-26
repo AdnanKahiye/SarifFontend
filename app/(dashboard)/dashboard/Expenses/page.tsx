@@ -1,8 +1,8 @@
-import ExpensesTable from "@/components/Customers/ExpensesTable";
+import ExpensesTable from "@/components/accounts/ExpensesTable";
 
-export default function CustomerPage() {
+export default function ExpensesPage() {
   return (
-    <div className="p-6">
+    <div className="4-6">
       <ExpensesTable />
     </div>
   );
