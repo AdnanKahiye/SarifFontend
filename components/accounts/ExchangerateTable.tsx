@@ -136,7 +136,7 @@ export default function CurrencyTable() {
                   onClick={() => { setMode("add"); setSelectedCurrency(null); setOpenModal(true); }}
                   className="bg-[#0ab39c] hover:bg-[#099885] text-white px-4 py-2 rounded text-[13px] flex items-center gap-1 transition-all"
                 >
-                  <span className="text-lg">+</span> Add Currency
+                  <span className="text-lg">+</span> Add Exchange-rate 
                 </button>
               )}
             </div>

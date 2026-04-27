@@ -6,13 +6,10 @@ import Label from "@/components/form/Label";
 import { X, Save, User } from "lucide-react";
 
 export interface AccountFormData {
-    // id: string;
     name: string;
-    accountType: number;
-    referenceId: string; // 0 for Male, 1 for Female
+    accountType: number; // 
+    referenceId: string | null;
     currencyId: number;
-    // currencyId: number;
-
 }
 
 interface Props {
@@ -24,10 +21,10 @@ interface Props {
 }
 
 const emptyForm: AccountFormData = {
-    // id: "",
+
     name: "",
-    accountType: 0, // Default to Male
-    referenceId: "",
+    accountType: 0,
+    referenceId: null,
     currencyId: 0,
 };
 
@@ -35,6 +32,14 @@ export default function CustomerFormModal({ open, mode, initialData, onClose, on
     const [form, setForm] = useState<AccountFormData>(emptyForm);
     const [errors, setErrors] = useState<Partial<Record<keyof AccountFormData, string>>>({});
     const [loading, setLoading] = useState(false);
+
+    const [currencies, setCurrencies] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetch("/currencies")
+            .then(res => res.json())
+            .then(data => setCurrencies(data));
+    }, []);
 
     useEffect(() => {
         if (open) {
@@ -55,7 +60,9 @@ export default function CustomerFormModal({ open, mode, initialData, onClose, on
     const validate = () => {
         const e: typeof errors = {};
         if (!form.name.trim()) e.name = "Name is required";
-        if (!form.referenceId.trim()) e.referenceId = "Reference ID is required";
+        if (form.accountType && form.accountType !== 0 && !form.referenceId) {
+            e.referenceId = "Reference account is required";
+        }
         if (form.currencyId === 0) e.currencyId = "Currency is required";
 
         setErrors(e);
@@ -95,7 +102,7 @@ export default function CustomerFormModal({ open, mode, initialData, onClose, on
                 <div className="relative p-6 border-b border-gray-100 dark:border-gray-800 text-center">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-center gap-2">
 
-                        {mode === "add" ? "New Customer" : "Edit Customer"}
+                        {mode === "add" ? "New Account" : "Edit Account"}
                     </h3>
                     <button
                         onClick={onClose}
@@ -125,28 +132,45 @@ export default function CustomerFormModal({ open, mode, initialData, onClose, on
                                 onChange={(e) => update("accountType", Number(e.target.value))}
                                 className={selectClassName}
                             >
-                                <option value={0}>Main</option>
-                                <option value={1}>Sub</option>
+                                <option value={0}>Select Account Type</option>
+                                <option value={1}>Cash</option>
+                                <option value={2}>Bank</option>
+                                <option value={3}>Wallet</option>
+                                <option value={4}>Customer</option>
+                                <option value={5}>Loan</option>
+                                <option value={6}>Expense</option>
+                                <option value={7}>Revenue</option>
+                                <option value={8}>Capital</option>
+                                <option value={9}>Receivable</option>
+                                <option value={10}>Payable</option>
                             </select>
                         </Field>
 
                         {/* Reference ID */}
                         <Field label="Reference ID" required error={errors.referenceId}>
                             <Input
-                                value={form.referenceId}
+                                value={form.referenceId || ""}
                                 onChange={(e) => update("referenceId", e.target.value)}
                                 placeholder="Enter reference ID"
                             />
                         </Field>
 
                         {/* Currency ID */}
-                        <Field label="Currency ID" required error={errors.currencyId}>
-                            <Input
-                                type="number"
+                        <Field label="Account Currency" required error={errors.currencyId}>
+                            <select
                                 value={form.currencyId}
                                 onChange={(e) => update("currencyId", Number(e.target.value))}
-                                placeholder="Enter currency ID"
-                            />
+                                className={selectClassName}
+                            >
+                                <option value={0}>Select Currency</option>
+                                
+
+                                {currencies.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name} ({c.code})
+                                    </option>
+                                ))}
+                            </select>
                         </Field>
 
                     </div>
@@ -170,7 +194,7 @@ export default function CustomerFormModal({ open, mode, initialData, onClose, on
                         ) : (
                             <Save className="w-4 h-4" />
                         )}
-                        {mode === "add" ? "Save Customer" : "Edit Customer"}
+                        {mode === "add" ? "Create" : "Edit"}
                     </button>
                 </div>
             </div>
