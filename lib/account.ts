@@ -359,4 +359,36 @@ getAccountExchangeLookup(){
    return api.post("/Account/transaction", data);  
    },
 
+   getAccountRevenueLookup() {
+  return api.get("/Account/account-revenue-lookup");
+} ,
+
+
+         // Ku dar method-kaan gudaha AccountService
+  getRevenues(
+    page: number = 1, 
+    pageSize: number = 10, 
+    fromDate?: string, 
+    toDate?: string
+  ) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      pageSize: pageSize.toString(),
+    });
+
+    if (fromDate) params.append("fromDate", fromDate);
+    if (toDate) params.append("toDate", toDate);
+
+    return api.get(`/Account/revinues?${params.toString()}`);
+  },
+
+
+      updateRevenue(id: string, data: any ) {
+  return api.put(`/Account/revenue/${id}`, data);
+},
+    createRevenue(data: any) {   
+    //console.log("Creating user with data:", data);
+   return api.post("/Account/transaction", data);  
+   },
+
 };
