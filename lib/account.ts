@@ -154,6 +154,14 @@ getAccountExchangeLookup(){
     return api.get("/Account/currency-lookup");
   },
 
+    getDashboardLookup(){
+    return api.get("/Account/dashboard-cards");
+  },
+
+  getRecentTransactions() {
+  return api.get("/Account/recent-transactions");
+},
+
 
 
     createExchange(data: any) {   
