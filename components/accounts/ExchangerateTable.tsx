@@ -81,7 +81,7 @@ export default function CurrencyTable() {
         toast.success("Exchange rate created successfully");
       } else {
         if (!selectedCurrency) return;
-        await AccountService.updateExchangeRate(selectedCurrency.currencyName, data);
+        await AccountService.updateExchangeRate(selectedCurrency.id, data);
         toast.success("Exchange rate updated");
       }
       setOpenModal(false);
@@ -95,7 +95,7 @@ export default function CurrencyTable() {
     if (!selectedCurrency) return;
     setDeleting(true);
     try {
-      await AccountService.deleteExchangeRate(selectedCurrency.currencyName);
+      await AccountService.deleteExchangeRate(selectedCurrency.id);
       toast.success("Exchange rate removed");
       setOpenDelete(false);
       loadCurrencies(currentPage, search);

@@ -107,23 +107,37 @@ export default function ExchangeTable() {
     };
 
     // ─── Add / Edit Submit ───────────────────────────────────────────────
-    const handleFormSubmit = async (data: ExchangeFormData) => {
-        try {
-            if (mode === "add") {
-                await AccountService.createExchangeSetting(data);
-                toast.success("Exchange created successfully");
-            } else {
-                if (!selectedExchange) return;
-                await AccountService.updateExchangeSetting(selectedExchange.id, data);
-                toast.success("Exchange updated successfully");
-            }
-            setOpenModal(false);
-            loadExchanges(currentPage, search);
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message || "Operation failed");
-        }
-    };
+   const handleFormSubmit = async (data: ExchangeFormData) => {
+  try {
+    if (mode === "add") {
+      await AccountService.createExchangeSetting({
+        currencyId: data.currencyId,
+        feeRate: Number(data.feeRate),
+        profitRate: Number(data.profitRate),
+        isActive: true,
+      });
 
+      toast.success("Exchange created successfully");
+    } else {
+      if (!selectedExchange) return;
+
+      await AccountService.updateExchangeSetting(selectedExchange.id, {
+        id: selectedExchange.id,
+        feeRate: Number(data.feeRate),
+        profitRate: Number(data.profitRate),
+        isActive: selectedExchange.isActive ?? true,
+      });
+
+      toast.success("Exchange updated successfully");
+    }
+
+    setOpenModal(false);
+    setSelectedExchange(null);
+    loadExchanges(currentPage, search);
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || "Operation failed");
+  }
+};
 
     // ─── Pagination ──────────────────────────────────────────────────────
     const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));

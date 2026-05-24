@@ -34,11 +34,12 @@ export const AccountService = {
     return api.post("/Account/exchange-rate", data);
   },
 
-  updateExchangeRate(id: string, data: any) {
+  updateExchangeRate(id: number, data: any) {
+    alert("ID: " + id + "\nData: " + JSON.stringify(data));
     return api.put(`/Account/exchange-rate/${id}`, data);
   },
 
-  deleteExchangeRate(id: string) {
+  deleteExchangeRate(id: number) {
     return api.delete(`/Account/exchange-rate/${id}`);
   },
 
