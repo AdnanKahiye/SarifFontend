@@ -27,6 +27,7 @@ interface LoanDto {
   dueDate: string;
   status: number;
   customerName: string;
+  paidAmount: number;
 }
 
 // ── Dropdown component ──────────────────────────────────────────
@@ -128,6 +129,7 @@ export default function LoanTable() {
     setLoading(true);
     try {
       const res = await AccountService.getLoans(
+        
         page,
         itemsPerPage,
         useFilters ? fromDate : firstDay,
@@ -213,6 +215,9 @@ export default function LoanTable() {
                   <th className="p-3">Customer</th>
                   <th className="p-3">Account</th>
                   <th className="p-3">Amount</th>
+                  <th className="p-3">Paid</th>
+                  <th className="p-3">Balances</th>
+
                   <th className="p-3">Status</th>
                   <th className="p-3">Start</th>
                   <th className="p-3">End</th>
@@ -225,12 +230,28 @@ export default function LoanTable() {
                   <tr key={item.id} className="text-[13px] hover:bg-gray-50">
                     <td className="p-3">{item.customerName}</td>
                     <td className="p-3">{item.accountName}</td>
-                    <td className="p-3 text-[#0ab39c] font-bold">
+                    <td className="p-3 text-blue font-bold">
                       {(item.principalAmount || 0).toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                       })}
                     </td>
+
+                      <td className="p-3 text-[#0ab39c] font-bold">
+                      {(item.paidAmount || 0).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </td>
+
+                    <td className="p-3 text-red-500 font-bold">
+  {(item.principalAmount - (item.paidAmount || 0)).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  })}
+</td>
+
+
                     <td className="p-3">
                       {(() => {
                         const status = getDepositStatusBadge(item.status);

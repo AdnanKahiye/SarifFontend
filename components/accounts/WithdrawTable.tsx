@@ -201,7 +201,7 @@ const formatMoney = (amount?: number, currencyId?: number) => {
         {/* <th className="p-3">Sender</th>
         <th className="p-3">Receiver</th> */}
         <th className="p-3">Account </th>
-        <th className="p-3">Amount</th>
+        <th className="p-3">Withdraw amount</th>
         <th className="p-3">Code</th>
         <th className="p-3">Status</th>
         <th className="p-3">CreateAt</th>
